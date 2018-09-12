@@ -89,5 +89,10 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	else
 		iFingerPort = lpServEnt->s_port;
 
+	// Define the socket address
+	sockAddr.sin_family = AF_INET;			// Internet address family
+	sockAddr.sin_port = iFingerPort;
+	sockAddr.sin_addr = *((LPIN_ADDR)*lpHostEnt->h_addr_list);
+
 	return 0;
 }
