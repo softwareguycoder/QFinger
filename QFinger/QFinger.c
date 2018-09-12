@@ -17,24 +17,24 @@
 
 void HandleError()
 {
-    char *s = NULL;
+	char *s = NULL;
 
-    // Translates the output of the WSAGetLastError() function into a
-    // human-understandable message.
-    FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER
-        | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL, WSAGetLastError(),
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPWSTR)&s, 0, NULL);
+	// Translates the output of the WSAGetLastError() function into a
+	// human-understandable message.
+	FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER
+		| FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPWSTR)&s, 0, NULL);
 
-    MessageBoxA(NULL, s, PROG_NAME, MB_OK | MB_ICONSTOP);
+	MessageBoxA(NULL, s, PROG_NAME, MB_OK | MB_ICONSTOP);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Program entry point
 
 int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-    LPSTR lpCmdLine, INT nCmdShow)
+	LPSTR lpCmdLine, INT nCmdShow)
 {
 	WSADATA		wsaData;				// Winsock implementation details
 	LPHOSTENT	lpHostEnt;				// Internet host information structure
@@ -51,6 +51,18 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	if (WSAStartup(WINSOCK_VERSION, &wsaData) != 0)
 	{
 		MessageBox(NULL, "Could not load Windows Sockets DLL.",
+			PROG_NAME, MB_OK | MB_ICONSTOP);
+
+		WSACleanup();	// Free all allocated program resources and exit
+		return 1;
+	}
+
+	// Resolve the host name
+	lpHostEnt = gethostbyname(HOST_NAME);
+
+	if (!lpHostEnt)
+	{
+		MessageBox(NULL, "Could not get IP address.",
 			PROG_NAME, MB_OK | MB_ICONSTOP);
 
 		WSACleanup();	// Free all allocated program resources and exit
