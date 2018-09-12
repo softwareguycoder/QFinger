@@ -69,5 +69,16 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		return 1;
 	}
 
+	// Create the socket
+	nSocket = socket(PF_INET, SOCK_STREAM, DEFAULT_PROTOCOL);
+	if (nSocket == INVALID_SOCKET)
+	{
+		MessageBox(NULL, "Unable to open a connection endpoint for communicating with the remote host.",
+			PROG_NAME, MB_OK | MB_ICONSTOP);
+
+		WSACleanup();	// Free all allocated program resources and exit
+		return 1;
+	}
+
 	return 0;
 }
