@@ -30,6 +30,28 @@ void HandleError()
 	MessageBoxA(NULL, s, PROG_NAME, MB_OK | MB_ICONSTOP);
 }
 
+void HandleErrorWithUserMessage(PCSTR pszMessage)
+{
+	if (pszMessage == NULL
+		|| strlen(pszMessage) == 0)
+		return;
+
+	char szBuffer[512];
+	char *s = NULL;
+
+	// Translates the output of the WSAGetLastError() function into a
+	// human-understandable message.
+	FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER
+		| FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPWSTR)&s, 0, NULL);
+
+	wsprintf(szBuffer, "%s\r\n\r\n%s", pszMessage, s);
+
+	MessageBoxA(NULL, szBuffer, PROG_NAME, MB_OK | MB_ICONSTOP);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Program entry point
 
@@ -93,6 +115,15 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	sockAddr.sin_family = AF_INET;			// Internet address family
 	sockAddr.sin_port = iFingerPort;
 	sockAddr.sin_addr = *((LPIN_ADDR)*lpHostEnt->h_addr_list);
+
+	// Connect the socket
+	nConnect = connect(nSocket, (LPSOCKADDR)&sockAddr,
+		sizeof(sockAddr));
+
+	if (nConnect != 0)
+	{
+		HandleErrorWithUserMessage("Unable to connect to the remote message.");
+	}
 
 	return 0;
 }
