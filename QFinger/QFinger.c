@@ -48,5 +48,14 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	int			nCharRecv;				// Number of characters received
 	int			nConnect;				// Socket connection results
 
-    return 0;
+	if (WSAStartup(WINSOCK_VERSION, &wsaData) != 0)
+	{
+		MessageBox(NULL, "Could not load Windows Sockets DLL.",
+			PROG_NAME, MB_OK | MB_ICONSTOP);
+
+		WSACleanup();	// Free all allocated program resources and exit
+		return 1;
+	}
+
+	return 0;
 }
