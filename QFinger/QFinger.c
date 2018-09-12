@@ -36,6 +36,17 @@ void HandleError()
 int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     LPSTR lpCmdLine, INT nCmdShow)
 {
-    // TODO: Add the application's code here
+	WSADATA		wsaData;				// Winsock implementation details
+	LPHOSTENT	lpHostEnt;				// Internet host information structure
+	SOCKET		nSocket;				// Socket number used by this program
+	SOCKADDR_IN	sockAddr;				// Socket address structure
+	LPSERVENT	lpServEnt;				// Service information structure
+	short		iFingerPort;			// Well-known port assignment is 79
+	char		szFingerInfo[5000];		// Buffer to hold Finger information
+	char		szFingerQuery[1000];	// Buffer to hold Finger query
+	int			nCharSent;				// Number of characters transmitted
+	int			nCharRecv;				// Number of characters received
+	int			nConnect;				// Socket connection results
+
     return 0;
 }
