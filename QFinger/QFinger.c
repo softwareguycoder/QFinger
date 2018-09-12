@@ -17,25 +17,25 @@
 
 void HandleError()
 {
-	char *s = NULL;
+    char *s = NULL;
 
-	// Translates the output of the WSAGetLastError() function into a
-	// human-understandable message.
-	FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER
-		| FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL, WSAGetLastError(),
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPWSTR)&s, 0, NULL);
+    // Translates the output of the WSAGetLastError() function into a
+    // human-understandable message.
+    FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER
+        | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL, WSAGetLastError(),
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPWSTR)&s, 0, NULL);
 
-	MessageBoxA(NULL, s, PROG_NAME, MB_OK | MB_ICONSTOP);
+    MessageBoxA(NULL, s, PROG_NAME, MB_OK | MB_ICONSTOP);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Program entry point
 
 int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-	LPSTR lpCmdLine, INT nCmdShow)
+    LPSTR lpCmdLine, INT nCmdShow)
 {
-	// TODO: Add the application's code here
-	return 0;
+    // TODO: Add the application's code here
+    return 0;
 }
