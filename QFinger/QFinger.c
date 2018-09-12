@@ -80,5 +80,14 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		return 1;
 	}
 
+	// Configure the socket
+	// Get the Finger service information
+	lpServEnt = getservbyname("Finger", NULL);
+
+	if (lpServEnt == NULL)
+		iFingerPort = IPPORT_FINGER;		// use the well-known port
+	else
+		iFingerPort = lpServEnt->s_port;
+
 	return 0;
 }
