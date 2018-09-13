@@ -27,7 +27,9 @@ void HandleError()
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		(LPWSTR)&s, 0, NULL);
 
-	MessageBoxA(NULL, s, PROG_NAME, MB_OK | MB_ICONSTOP);
+	ShowStopError(s);
+	
+	LocalFree(s);
 }
 
 void HandleErrorWithUserMessage(PCSTR pszMessage)
@@ -49,7 +51,48 @@ void HandleErrorWithUserMessage(PCSTR pszMessage)
 
 	wsprintf(szBuffer, "%s\r\n\r\n%s", pszMessage, s);
 
-	MessageBoxA(NULL, szBuffer, PROG_NAME, MB_OK | MB_ICONSTOP);
+	ShowStopError(szBuffer);
+	
+	LocalFree(s);
+}
+
+void ShowStopError(PCSTR pszMessage)
+{
+	if (pszMessage == NULL
+		|| strlen(pszMessage) == 0)
+	{
+		return;
+	}
+	
+	MessageBoxA(NULL, pszMessage, PROG_NAME, MB_OK | MB_ICONSTOP);
+}
+
+void ShowInformation(PCSTR pszMessage)
+{
+	if (pszMessage == NULL
+		|| strlen(pszMessage) == 0)
+	{
+		return;
+	}
+	
+	MessageBoxA(NULL, pszMessage, PROG_NAME, MB_OK | MB_ICONINFORMATION);
+}
+
+void ShowInformation(PCSTR pszMessage, PCSTR pszCaption)
+{
+	if (pszMessage == NULL
+		|| strlen(pszMessage) == 0)
+	{
+		return;
+	}
+
+	if (pszCaption == NULL
+		|| strlen(pszCaption) == 0)
+	{
+		return;
+	}
+	
+	MessageBoxA(NULL, pszMessage, pszCaption, MB_OK | MB_ICONINFORMATION);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -70,10 +113,11 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	int			nCharRecv;				// Number of characters received
 	int			nConnect;				// Socket connection results
 
-	if (WSAStartup(WINSOCK_VERSION, &wsaData) != 0)
+	int nResult = WSAStartup(WINSOCK_VERSION, &wsaData);
+	
+	if (nResult != 0)
 	{
-		MessageBox(NULL, "Could not load Windows Sockets DLL.",
-			PROG_NAME, MB_OK | MB_ICONSTOP);
+		ShowStopError("Could not load Windows Sockets DLL.");
 
 		WSACleanup();	// Free all allocated program resources and exit
 		return 1;
@@ -84,8 +128,7 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	if (!lpHostEnt)
 	{
-		MessageBox(NULL, "Could not get IP address.",
-			PROG_NAME, MB_OK | MB_ICONSTOP);
+		ShowStopError("Could not get IP address.");
 
 		WSACleanup();	// Free all allocated program resources and exit
 		return 1;
@@ -95,8 +138,7 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	nSocket = socket(PF_INET, SOCK_STREAM, DEFAULT_PROTOCOL);
 	if (nSocket == INVALID_SOCKET)
 	{
-		MessageBox(NULL, "Unable to open a connection endpoint for communicating with the remote host.",
-			PROG_NAME, MB_OK | MB_ICONSTOP);
+		ShowStopError("Unable to open a connection endpoint for communicating with the remote host.");
 
 		WSACleanup();	// Free all allocated program resources and exit
 		return 1;
@@ -120,10 +162,55 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	nConnect = connect(nSocket, (LPSOCKADDR)&sockAddr,
 		sizeof(sockAddr));
 
-	if (nConnect != 0)
+	if (nConnect != 0)		/* failed to connect to the server. */
 	{
-		HandleErrorWithUserMessage("Unable to connect to the remote message.");
+		HandleErrorWithUserMessage(
+			"Unable to connect to the remote message.");
+		
+		WSACleanup();
+		return 1;
 	}
-
+	
+	// Format and send the Finger query
+	wsprintf(szFingerQuery, "%s\r\n", FINGER_QUERY);
+	
+	nCharSent = send(nSocket, szFingerQuery,
+		lstrlen(szFingerQuery), SEND_FLAGS);
+		
+	if (nCharSent == SOCKET_ERROR)		/* failed to send */
+	{
+		HandleErrorWithUserMessage(
+			"A problem was experienced trying to send the Finger query.");
+		
+		WSACleanup();
+		return 1;
+	}
+	
+	// Get the Finger information from the remote host
+	do
+	{
+		nCharRecv = recv(nSocket,
+			(LPSTR)&szFingerInfo[nConnect],
+			sizeof(szFingerInfo) - nConnect,
+			RECV_FLAGS);
+		nConnect += nCharRecv;
+	}
+	while(nCharRecv > 0);
+	
+	if (nCharRecv == SOCKET_ERROR)
+	{
+		HandleErrorWithUserMessage(
+			"Problem was encountered trying to receive response.");
+		
+		WSACleanup();
+		return 1;
+	}
+	
+	// Report the results
+	wsprintf(szFingerQuery, "%s@%s", 
+		FINGER_QUERY, HOST_NAME);
+	
+	ShowInformation(szFingerInfo, szFingerQuery);
+	
 	return 0;
 }
