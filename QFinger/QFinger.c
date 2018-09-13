@@ -41,7 +41,7 @@
 #define RECV_FLAGS			0					// No recv() flags specified
 
 ///////////////////////////////////////////////////////////////////////////////
-// Error handling helper functions
+// Error-handling and user-interaction helper functions
 
 /**
  * \brief Shows an informational message to the user.
