@@ -264,5 +264,6 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	ShowInformationWithCaption(szFingerInfo, szFingerQuery);
 
+	WSACleanup();	// Free all allocated program resources and exit
 	return 0;
 }
