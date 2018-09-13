@@ -11,7 +11,8 @@
 /**
  * \brief Gets the address of the host to which to connect in order to obtain Finger information.
  */
-#define	HOST_NAME			"cerfnet.com"		// This can be any valid host name
+//#define	HOST_NAME			"cerfnet.com"		// This can be any valid host name
+#define	HOST_NAME			"uci.edu"		// This can be any valid host name
 
 /**
  * \brief Gets a code that specifies we want Winsock 1.1.
@@ -21,7 +22,8 @@
 /**
  * \brief Gets the Finger query to send to the server.
  */
-#define FINGER_QUERY		"lonetech"			// This can be a login or real name
+//#define FINGER_QUERY		"lonetech"			// This can be a login or real name
+#define FINGER_QUERY		"bchart"			// This can be a login or real name
 
 /**
  * \brief Gets a value that indicates which protocol to use as the default.
@@ -177,7 +179,7 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 
 	// Resolve the host name
-	const LPHOSTENT lpHostEnt = gethostbyname(HOST_NAME);
+	const struct FAR hostent* lpHostEnt = gethostbyname(HOST_NAME);
 
 	if (!lpHostEnt)
 	{
@@ -199,7 +201,7 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	// Configure the socket
 	// Get the Finger service information
-	const LPSERVENT lpServEnt = getservbyname("Finger", NULL);
+	const struct FAR servent* lpServEnt = getservbyname("Finger", NULL);
 
 	if (lpServEnt == NULL)
 		iFingerPort = IPPORT_FINGER;		// use the well-known port
@@ -218,7 +220,7 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	if (nConnectResult != 0)		/* failed to connect to the server. */
 	{
 		HandleErrorWithUserMessage(
-			"Unable to connect to the remote message.");
+			"Unable to connect to the remote host.");
 
 		WSACleanup();
 		return 1;
