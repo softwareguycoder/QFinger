@@ -46,7 +46,7 @@
  * \param pszMessage The content of the message box.
  * \param pszCaption The caption (title) of the message box.
  */
-void ShowInformation(LPCSTR pszMessage, LPCSTR pszCaption)
+void ShowInformationWithCaption(LPCSTR pszMessage, LPCSTR pszCaption)
 {
 	if (pszMessage == NULL
 		|| strlen(pszMessage) == 0)
@@ -258,11 +258,11 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		return 1;
 	}
 
-	// Report the results
+	// Report the results of the Finger query
 	wsprintf(szFingerQuery, "%s@%s",
 		FINGER_QUERY, HOST_NAME);
 
-	ShowInformation(szFingerInfo, szFingerQuery);
+	ShowInformationWithCaption(szFingerInfo, szFingerQuery);
 
 	return 0;
 }
